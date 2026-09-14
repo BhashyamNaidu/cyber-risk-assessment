@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Security Score — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app-root" class="state-loading">
+
+    <header class="app-header">
+      <div class="header-left">
+        <div class="app-eyebrow">Device Security</div>
+        <h1 id="device-label">—</h1>
+        <div id="last-scan-time" class="last-scan-time">—</div>
+      </div>
+      <button id="refresh-button" class="btn-refresh">Refresh</button>
+    </header>
+
+    <div class="loading-view">
+      <div class="skeleton skeleton-overview"></div>
+      <div class="skeleton skeleton-gauge"></div>
+      <div class="skeleton skeleton-panel"></div>
+      <div class="skeleton skeleton-panel"></div>
+    </div>
+
+    <div class="empty-view">
+      <div class="empty-icon">&#9678;</div>
+      <h2>No scans yet</h2>
+      <p>Run the Desktop Agent on this device to collect telemetry and generate your first Cyber Security Score.</p>
+    </div>
+
+    <div class="error-view">
+      <div class="error-icon">&#9888;</div>
+      <h2>Couldn't load dashboard data</h2>
+      <p id="error-message">Something went wrong.</p>
+      <button id="retry-button" class="btn-retry">Retry</button>
+    </div>
+
+    <main class="loaded-view">
+      <div id="degraded-banner" class="degraded-banner">
+        <span id="degraded-banner-text">&#9888; Partial scan — some telemetry could not be collected.</span>
+      </div>
+
+      <section class="overview-row">
+        <div class="overview-card">
+          <div class="overview-label">Security Score</div>
+          <div class="overview-value" id="overview-score">—</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Risk Level</div>
+          <div class="overview-value" id="overview-risk-level">—</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Findings</div>
+          <div class="overview-value" id="overview-findings">—</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Scan Status</div>
+          <div class="overview-value" id="overview-status">—</div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel gauge-panel">
+          <svg viewBox="0 0 220 140" class="gauge-svg">
+            <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#2A3140" stroke-width="14" stroke-linecap="round" />
+            <path d="M 20 110 A 90 90 0 0 1 76 33" fill="none" stroke="#3DDC97" stroke-width="14" stroke-linecap="round" opacity="0.35" />
+            <path d="M 76 33 A 90 90 0 0 1 144 33" fill="none" stroke="#F5B342" stroke-width="14" stroke-linecap="round" opacity="0.35" />
+            <path d="M 144 33 A 90 90 0 0 1 200 110" fill="none" stroke="#F0553F" stroke-width="14" stroke-linecap="round" opacity="0.35" />
+            <line id="gauge-needle" x1="110" y1="110" x2="110" y2="30" stroke="#4FA3E3" stroke-width="3" stroke-linecap="round" transform="rotate(0 110 110)" />
+            <circle cx="110" cy="110" r="6" fill="#E8EAED" />
+          </svg>
+          <div class="gauge-readout">
+            <span id="gauge-score" class="gauge-score">—</span>
+            <span class="gauge-max">/100</span>
+          </div>
+          <div id="gauge-tier" class="gauge-tier">—</div>
+          <div id="confidence-badge" class="confidence-badge">
+            <span>Model confidence:</span><span id="confidence-value">—</span>
+          </div>
+
+          <div class="score-meta">
+            <div class="score-meta-row"><span>Risk Score</span><span id="meta-risk-score">—</span></div>
+            <div class="score-meta-row"><span>Scan Status</span><span id="meta-scan-status">—</span></div>
+            <div class="score-meta-row"><span>Last Scan</span><span id="meta-last-scan">—</span></div>
+          </div>
+          <p id="score-explanation" class="score-explanation">—</p>
+        </section>
+
+        <section class="panel findings-panel">
+          <h3>Findings</h3>
+          <div id="findings-list" class="findings-list"></div>
+        </section>
+
+        <section class="panel history-panel">
+          <h3>Security Score History</h3>
+          <div id="history-sparkline" class="history-content"></div>
+        </section>
+
+        <section class="panel recommendations-panel">
+          <h3 id="recommendations-heading">Recommendations by impact</h3>
+          <div id="recommendations-list" class="recommendations-list"></div>
+        </section>
+      </div>
+
+      <section class="panel scan-details-panel">
+        <h3>Scan Details</h3>
+        <div id="scan-details" class="scan-details-grid"></div>
+      </section>
+
+      <section class="panel model-explanation-panel">
+        <h3>ML Assessment Signals</h3>
+        <p id="ml-explanation-note" class="score-explainer-intro">—</p>
+        <div id="ml-explanation" class="scan-details-grid"></div>
+      </section>
+
+      <section class="panel score-explainer-panel">
+        <h3>About Your Security Score</h3>
+        <p class="score-explainer-intro">Your Security Score is derived from your measured security risk. Higher score = better.</p>
+        <div class="score-bands">
+          <div class="score-band"><span class="band-dot" style="background:#3DDC97"></span>100 — Excellent</div>
+          <div class="score-band"><span class="band-dot" style="background:#3DDC97"></span>80 — Good</div>
+          <div class="score-band"><span class="band-dot" style="background:#F5B342"></span>60 — Moderate</div>
+          <div class="score-band"><span class="band-dot" style="background:#F0553F"></span>40 — High Risk</div>
+          <div class="score-band"><span class="band-dot" style="background:#F0553F"></span>0 — Critical</div>
+        </div>
+        <div id="score-explainer-current" class="score-explainer-current"></div>
+      </section>
+    </main>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

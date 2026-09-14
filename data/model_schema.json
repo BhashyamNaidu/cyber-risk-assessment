@@ -1,0 +1,174 @@
+{
+  "model_version": "rf-v2-observable-windows",
+  "training_dataset": {
+    "path": "synthetic_dataset.csv",
+    "rows": 5000,
+    "seed": 42
+  },
+  "trained_at_utc": "2026-09-03T15:47:28.372497+00:00",
+  "features_numeric": [
+    "os_days_since_update",
+    "firewall_enabled",
+    "antivirus_enabled",
+    "days_since_av_update",
+    "browser_safe_browsing_enabled",
+    "browser_autofill_passwords",
+    "risky_extension_count"
+  ],
+  "observable_features_numeric": [
+    "os_days_since_update",
+    "firewall_enabled",
+    "antivirus_enabled",
+    "days_since_av_update",
+    "browser_autofill_passwords",
+    "risky_extension_count"
+  ],
+  "feature_categorical": [
+    "os_type"
+  ],
+  "os_types": [
+    "Linux",
+    "Windows",
+    "macOS"
+  ],
+  "classes": [
+    "High",
+    "Low",
+    "Medium"
+  ],
+  "tier_midpoints_0_100": {
+    "Low": 20.0,
+    "Medium": 55.0,
+    "High": 85.0
+  },
+  "preprocessing": "OneHotEncoder(os_type; fixed Linux/Windows/macOS order); numeric features passed through unchanged",
+  "missingness_strategy": "Two validated observable-feature models: 7-feature RF for complete telemetry and 6-feature RF when browser_safe_browsing_enabled is unavailable. No value is imputed.",
+  "hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 8,
+    "min_samples_leaf": 10,
+    "random_state": 42
+  },
+  "validation": {
+    "split": "stratified 75/25 held-out, random_state=42",
+    "full_model": {
+      "accuracy": 0.9104,
+      "precision_weighted": 0.9107,
+      "recall_weighted": 0.9104,
+      "f1_weighted": 0.9105,
+      "roc_auc_ovr_weighted": 0.9817,
+      "confusion_matrix": [
+        [
+          347,
+          0,
+          23
+        ],
+        [
+          0,
+          416,
+          36
+        ],
+        [
+          20,
+          33,
+          375
+        ]
+      ],
+      "confidence_behavior": [
+        {
+          "range": "0.4-0.6",
+          "count": 174,
+          "mean_confidence": 0.5416,
+          "accuracy": 0.6954
+        },
+        {
+          "range": "0.6-0.8",
+          "count": 502,
+          "mean_confidence": 0.709,
+          "accuracy": 0.8904
+        },
+        {
+          "range": "0.8-1.0",
+          "count": 574,
+          "mean_confidence": 0.9198,
+          "accuracy": 0.993
+        }
+      ]
+    },
+    "observable_model": {
+      "accuracy": 0.7912,
+      "precision_weighted": 0.7911,
+      "recall_weighted": 0.7912,
+      "f1_weighted": 0.7907,
+      "roc_auc_ovr_weighted": 0.9335,
+      "confusion_matrix": [
+        [
+          307,
+          0,
+          63
+        ],
+        [
+          0,
+          390,
+          62
+        ],
+        [
+          45,
+          91,
+          292
+        ]
+      ],
+      "confidence_behavior": [
+        {
+          "range": "0.4-0.6",
+          "count": 328,
+          "mean_confidence": 0.5377,
+          "accuracy": 0.5732
+        },
+        {
+          "range": "0.6-0.8",
+          "count": 433,
+          "mean_confidence": 0.6906,
+          "accuracy": 0.7506
+        },
+        {
+          "range": "0.8-1.0",
+          "count": 489,
+          "mean_confidence": 0.9202,
+          "accuracy": 0.9734
+        }
+      ]
+    },
+    "rule_based_baseline": {
+      "accuracy": 0.836,
+      "precision_weighted": 0.858,
+      "recall_weighted": 0.836,
+      "f1_weighted": 0.8357
+    }
+  },
+  "global_feature_importance": {
+    "full": {
+      "os_days_since_update": 0.285042,
+      "firewall_enabled": 0.301728,
+      "antivirus_enabled": 0.097737,
+      "days_since_av_update": 0.051371,
+      "browser_safe_browsing_enabled": 0.143818,
+      "browser_autofill_passwords": 0.051642,
+      "risky_extension_count": 0.062108,
+      "os_type_Linux": 0.001324,
+      "os_type_Windows": 0.003137,
+      "os_type_macOS": 0.002094
+    },
+    "observable": {
+      "os_days_since_update": 0.32957,
+      "firewall_enabled": 0.339991,
+      "antivirus_enabled": 0.120663,
+      "days_since_av_update": 0.073796,
+      "browser_autofill_passwords": 0.05227,
+      "risky_extension_count": 0.073824,
+      "os_type_Linux": 0.001853,
+      "os_type_Windows": 0.004928,
+      "os_type_macOS": 0.003104
+    }
+  }
+}

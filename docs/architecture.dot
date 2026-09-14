@@ -1,0 +1,30 @@
+digraph Architecture {
+  rankdir=TB;
+  bgcolor="white";
+  node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled", fillcolor="#EEF3FB", color="#2C5CA6", penwidth=1.3];
+  edge [fontname="Helvetica", fontsize=9, color="#555555"];
+
+  Agent [label="Desktop Agent\n(OS + browser telemetry collector)", fillcolor="#FBF3D9", color="#B8962E"];
+  Telemetry [label="Raw Telemetry\n(structured JSON)", shape=note, fillcolor="#F5F5F5", color="#888888"];
+
+  subgraph cluster_independent {
+    label="Independent, single-responsibility components";
+    fontname="Helvetica-Bold"; fontsize=12; color="#2C5CA6"; style=rounded;
+    Rules [label="Rule Engine\nDeterministic CVSS-grounded\npolicy checks -> flags +\nexplanations + fallback score"];
+    RF [label="Random Forest\nPredictive risk-tier\nclassification (raw telemetry only)"];
+    CF [label="Counterfactual\nRecommendation Engine\nRe-queries RF per candidate fix ->\nranked, quantified impact"];
+  }
+
+  Aggregator [label="Response Aggregator\n(backend orchestration only\n- no scoring logic)", fillcolor="#F7ECF7", color="#7A3E8C"];
+  Dashboard [label="Dashboard\n(risk tier, rule-based\nexplanations, ranked\nrecommendations)"];
+
+  Agent -> Telemetry;
+  Telemetry -> Rules;
+  Telemetry -> RF;
+  Telemetry -> CF;
+  RF -> CF [label="  trained model", style=dashed];
+  Rules -> Aggregator;
+  RF -> Aggregator;
+  CF -> Aggregator;
+  Aggregator -> Dashboard;
+}

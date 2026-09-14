@@ -1,0 +1,82 @@
+{
+  "info": {
+    "name": "Smart Personal Cyber Risk Score Calculator API",
+    "description": "Matches docs/api_contract.md exactly. Base URL variable: {{base_url}} (default http://localhost:8000)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "base_url", "value": "http://localhost:8000" }],
+  "item": [
+    {
+      "name": "Health check",
+      "request": { "method": "GET", "url": "{{base_url}}/health" }
+    },
+    {
+      "name": "Model info",
+      "request": { "method": "GET", "url": "{{base_url}}/model/info" }
+    },
+    {
+      "name": "POST /scan - full telemetry (High risk)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/scan",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"device_id\": \"device-abc123\",\n  \"os_type\": \"Windows\",\n  \"os_days_since_update\": 150,\n  \"firewall_enabled\": false,\n  \"antivirus_enabled\": false,\n  \"days_since_av_update\": 45,\n  \"browser_safe_browsing_enabled\": false,\n  \"browser_autofill_passwords\": true,\n  \"risky_extension_count\": 3,\n  \"collected_at\": \"2026-08-06T10:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /scan - full telemetry (Low risk)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/scan",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"device_id\": \"device-safe-1\",\n  \"os_type\": \"macOS\",\n  \"os_days_since_update\": 2,\n  \"firewall_enabled\": true,\n  \"antivirus_enabled\": true,\n  \"days_since_av_update\": 1,\n  \"browser_safe_browsing_enabled\": true,\n  \"browser_autofill_passwords\": false,\n  \"risky_extension_count\": 0,\n  \"collected_at\": \"2026-08-06T10:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /scan - degraded (partial telemetry)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/scan",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"device_id\": \"device-degraded-1\",\n  \"os_type\": \"Linux\",\n  \"os_days_since_update\": 10,\n  \"firewall_enabled\": null,\n  \"antivirus_enabled\": null,\n  \"days_since_av_update\": null,\n  \"browser_safe_browsing_enabled\": true,\n  \"browser_autofill_passwords\": false,\n  \"risky_extension_count\": 0,\n  \"collected_at\": \"2026-08-06T10:05:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "POST /scan - validation error (422)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/scan",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"device_id\": \"x\",\n  \"collected_at\": \"2026-08-06T10:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /devices/{device_id}/scans",
+      "request": { "method": "GET", "url": "{{base_url}}/devices/device-abc123/scans" }
+    },
+    {
+      "name": "GET /devices/{device_id}/latest",
+      "request": { "method": "GET", "url": "{{base_url}}/devices/device-abc123/latest" }
+    },
+    {
+      "name": "GET /devices/{device_id}/latest - 404 case",
+      "request": { "method": "GET", "url": "{{base_url}}/devices/nonexistent/latest" }
+    },
+    {
+      "name": "GET /scans/{scan_id} (replace scan_id from a previous response)",
+      "request": { "method": "GET", "url": "{{base_url}}/scans/REPLACE_WITH_SCAN_ID" }
+    }
+  ]
+}
