@@ -18,17 +18,33 @@ repeats) for statistical power:
 - Pipeline A: raw telemetry -> Random Forest
 - Pipeline B: raw telemetry + rule_score -> Random Forest
 
-**Result:**
+**Result** (reproduced via `ml/ablation_study.py`; raw per-fold output
+persisted in `data/ablation_study_results.json`):
 
 | | Mean Accuracy | Std |
 |---|---|---|
-| Pipeline A | 90.68% | 0.79% |
-| Pipeline B | 90.59% | 0.84% |
+| Pipeline A | 90.68% | 0.80% |
+| Pipeline B | 90.61% | 0.85% |
 
-Paired t-test p = 0.31; Wilcoxon signed-rank p = 0.28; Cohen's d = -0.15
-(negligible, slightly negative). Pipeline B wins 21/50 folds, Pipeline A
-wins 26/50, 3 ties. **No statistically significant difference.** The
-hypothesis is rejected on evidence, not assumption.
+Paired t-test p = 0.459; Wilcoxon signed-rank p = 0.518; Cohen's d = 0.106
+(negligible). Pipeline A wins 25/50 folds, Pipeline B wins 23/50, 2 ties.
+**No statistically significant difference.** The hypothesis is rejected on
+evidence, not assumption.
+
+> **Provenance note:** the script that originally produced this comparison
+> was missing from the repository (referenced in PROJECT_STATUS.md but not
+> present as a file) until `ml/ablation_study.py` was written to reproduce
+> the documented methodology from scratch against the current dataset and
+> current RF hyperparameters. The figures above are that re-run's actual
+> output — not the previously-cited 90.68%/90.59%, p=0.31, Cohen's d=-0.15.
+> The two runs agree on the conclusion that matters (no significant
+> difference) but not on every decimal, most likely due to differing
+> library versions and/or CV fold ordering between whenever the original,
+> now-unrecoverable run happened and this one. The previous figures are kept
+> in `data/ablation_study_results.json`'s
+> `previously_documented_values_for_comparison` field for transparency, not
+> presented as verified. Do not cite the old figures going forward — cite
+> the table above, which is regenerable by running the script.
 
 **Interpretation:** Random Forest trained on the 7 raw telemetry features
 already recovers the interaction structure the rule score was designed to
@@ -101,6 +117,69 @@ deployment validity and its genuine probabilistic ML assessment—not a claim
 that it outperforms the rule baseline on every metric. Both results are
 synthetic-data evidence and are not real-world incidence estimates.
 
+## Fabrication vs. conservative zero-severity treatment — why these are epistemically different
+
+This project draws a hard line against ever fabricating a value for
+unavailable telemetry, but that line means something different in the ML
+path than it does in the deterministic Rule Engine fallback, and the two
+must not be conflated. This section makes the distinction explicit (it was
+previously implicit, and an unexplained absence of documentation on this
+point is itself worth calling out honestly rather than assuming a reader
+would infer it correctly).
+
+**Prohibited: imputing a value for unavailable telemetry so the ML model can run.**
+`browser_safe_browsing_enabled` is `None` on real Windows Chrome telemetry
+(§ "Observable-feature strategy" above). The rejected approach is
+`None -> False` (or `-> True`, or any other stand-in) fed into the 7-feature
+Random Forest's `predict_proba()`. This is prohibited because a trained
+classifier's output is a single opaque, jointly-learned function of every
+input together — the model was fit on real observed 0/1 values for that
+feature, each of which was genuine evidence about a device. Substituting a
+guessed value doesn't just leave a gap; it **asserts a specific fact the
+model has no way to distinguish from a real observation**, and the resulting
+shift in `predict_proba()`'s output is unbounded and uncharacterizable — it
+could not be given the "why" a probability is normally owed in scientific
+reporting. This is exactly why the observable-feature strategy exists: a
+**second, independently validated 6-feature model**, never a substitution
+trick on the 7-feature one.
+
+**Conservative, and categorically different: the deterministic Rule Engine
+fallback treats a missing field as contributing zero severity.** When
+`services.run_pipeline()` cannot select either RF (telemetry is incomplete
+in a way neither validated model shape covers), it falls back to
+`rule_based_score()`. That function is a **closed-form sum of independent
+per-feature severity terms** (`ml/generate_dataset.py`'s `scale_*` functions
+— e.g. `scale_firewall(enabled) = BUDGET if enabled==0 else 0.0`). Treating
+an unknown field's term as `0.0` in that sum is not a guess about the
+device — it is mathematically identical to **omitting that term from the
+sum entirely**, because `0.0` is the sum's own identity element. Nothing is
+asserted about the device's real firewall state; the field is not claimed to
+be secure, only that it contributes no measured severity because nothing was
+measured. Two things keep this honest end-to-end, not just at the arithmetic
+level: (1) the field still appears in the response's
+`telemetry_unavailable_features` list, so nothing is hidden from whoever
+reads the result, and (2) the resulting scan is always marked
+`ml_used=false`, so the fallback nature of the number is never presented as
+a model's assessment.
+
+**Why the same "treat missing as X" pattern is safe in one place and
+prohibited in the other:** a linear sum's terms are provably independent —
+each `scale_*` function only ever looks at its own feature, so "this term is
+absent" and "this term equals its additive identity" are the same operation
+by construction, and that equivalence is checkable by reading the function.
+A Random Forest's `predict_proba()` has no such decomposition — every
+feature interacts with every other feature through the learned tree
+structure, so there is no value you can substitute for a missing feature
+that is provably equivalent to "this feature contributed nothing." That
+absence of a safe substitute for the ML path — not a difference in how much
+the project cares about honesty in each — is the entire reason two separate
+mechanisms (validated dual-model selection for ML; zero-contribution
+fallback arithmetic for rules) exist instead of one shared imputation rule
+applied everywhere.
+
+This section is a documentation clarification only; it does not change
+`ml/rule_engine.py`, `ml/generate_dataset.py`, or `backend/app/services.py`.
+
 ## Rule Engine's justified role (not an accuracy claim)
 
 1. **Explainable security reasoning** — `generate_findings()` returns
@@ -130,7 +209,7 @@ dashboard's primary score.
 > telemetry collection, (2) rigorously tests — via a 50-fold paired
 > statistical comparison — whether injecting a CVSS-grounded expert rule
 > score as an engineered ML feature improves predictive accuracy, finding
-> that it does not (p = 0.31), and (3) redesigns the system architecture
+> that it does not (p = 0.459, reproducible via `ml/ablation_study.py`), and (3) redesigns the system architecture
 > accordingly: a Random Forest classifier for prediction, an independent
 > deterministic Rule Engine for explainability and policy auditability, and
 > a counterfactual recommendation engine that quantifies expected risk

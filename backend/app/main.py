@@ -116,9 +116,14 @@ def get_device_scans(device_id: str, limit: int = Query(20, le=100), db: Session
     device = db.get(Device, device_id)
     if device is None:
         raise HTTPException(status_code=404, detail="Device not found")
+    # Risk history is a production-posture view — experiment-generated scans
+    # (baseline/post-intervention rescans from the Phase 2+ validation layer)
+    # are excluded so controlled-VM trial noise never appears in a real
+    # device's trend. Every pre-Phase-2 scan has is_experiment=False by
+    # column default, so this filter is a no-op against existing data.
     scans = (
         db.query(Scan)
-        .filter(Scan.device_id == device_id)
+        .filter(Scan.device_id == device_id, Scan.is_experiment == False)  # noqa: E712
         .order_by(Scan.scanned_at.desc())
         .limit(limit)
         .all()

@@ -1,0 +1,308 @@
+{
+  "methodology": {
+    "description": "Paired comparison: Pipeline A (raw 7-feature telemetry) vs Pipeline B (raw telemetry + rule_score_0_10 as an 8th engineered feature), identical RandomForest hyperparameters and identical fold splits per repeat.",
+    "cv": "RepeatedStratifiedKFold(n_splits=5, n_repeats=10, random_state=42) -> 50 paired folds",
+    "hyperparameters": {
+      "n_estimators": 200,
+      "max_depth": 8,
+      "min_samples_leaf": 10,
+      "random_state": 42
+    },
+    "dataset": {
+      "path": "synthetic_dataset.csv",
+      "rows": 5000
+    },
+    "library_versions": {
+      "scikit_learn": "1.9.0",
+      "scipy": "1.18.1",
+      "pandas": "3.0.5",
+      "numpy": "2.5.2"
+    },
+    "generated_at_utc": "2026-09-15T05:43:53.564982+00:00"
+  },
+  "pipeline_a_mean_accuracy": 0.9068,
+  "pipeline_a_std_accuracy": 0.008,
+  "pipeline_b_mean_accuracy": 0.9061,
+  "pipeline_b_std_accuracy": 0.0085,
+  "paired_t_test": {
+    "statistic": 0.7469,
+    "p_value": 0.4587
+  },
+  "wilcoxon_signed_rank": {
+    "statistic": 525.0,
+    "p_value": 0.5175,
+    "note": null
+  },
+  "cohens_d": 0.1056,
+  "fold_wins": {
+    "pipeline_a": 25,
+    "pipeline_b": 23,
+    "ties": 2
+  },
+  "interpretation": "Paired t-test p=0.4587 >= 0.05: no statistically significant difference found between Pipeline A and Pipeline B on this run, consistent with the previously-documented conclusion that rule_score does not measurably help RF here.",
+  "fold_level_results": [
+    {
+      "fold": 0,
+      "pipeline_a_accuracy": 0.909,
+      "pipeline_b_accuracy": 0.898
+    },
+    {
+      "fold": 1,
+      "pipeline_a_accuracy": 0.899,
+      "pipeline_b_accuracy": 0.895
+    },
+    {
+      "fold": 2,
+      "pipeline_a_accuracy": 0.909,
+      "pipeline_b_accuracy": 0.916
+    },
+    {
+      "fold": 3,
+      "pipeline_a_accuracy": 0.921,
+      "pipeline_b_accuracy": 0.916
+    },
+    {
+      "fold": 4,
+      "pipeline_a_accuracy": 0.907,
+      "pipeline_b_accuracy": 0.914
+    },
+    {
+      "fold": 5,
+      "pipeline_a_accuracy": 0.912,
+      "pipeline_b_accuracy": 0.905
+    },
+    {
+      "fold": 6,
+      "pipeline_a_accuracy": 0.901,
+      "pipeline_b_accuracy": 0.907
+    },
+    {
+      "fold": 7,
+      "pipeline_a_accuracy": 0.911,
+      "pipeline_b_accuracy": 0.91
+    },
+    {
+      "fold": 8,
+      "pipeline_a_accuracy": 0.908,
+      "pipeline_b_accuracy": 0.901
+    },
+    {
+      "fold": 9,
+      "pipeline_a_accuracy": 0.906,
+      "pipeline_b_accuracy": 0.907
+    },
+    {
+      "fold": 10,
+      "pipeline_a_accuracy": 0.918,
+      "pipeline_b_accuracy": 0.915
+    },
+    {
+      "fold": 11,
+      "pipeline_a_accuracy": 0.896,
+      "pipeline_b_accuracy": 0.905
+    },
+    {
+      "fold": 12,
+      "pipeline_a_accuracy": 0.913,
+      "pipeline_b_accuracy": 0.908
+    },
+    {
+      "fold": 13,
+      "pipeline_a_accuracy": 0.889,
+      "pipeline_b_accuracy": 0.889
+    },
+    {
+      "fold": 14,
+      "pipeline_a_accuracy": 0.905,
+      "pipeline_b_accuracy": 0.912
+    },
+    {
+      "fold": 15,
+      "pipeline_a_accuracy": 0.914,
+      "pipeline_b_accuracy": 0.903
+    },
+    {
+      "fold": 16,
+      "pipeline_a_accuracy": 0.905,
+      "pipeline_b_accuracy": 0.91
+    },
+    {
+      "fold": 17,
+      "pipeline_a_accuracy": 0.898,
+      "pipeline_b_accuracy": 0.901
+    },
+    {
+      "fold": 18,
+      "pipeline_a_accuracy": 0.9,
+      "pipeline_b_accuracy": 0.895
+    },
+    {
+      "fold": 19,
+      "pipeline_a_accuracy": 0.911,
+      "pipeline_b_accuracy": 0.92
+    },
+    {
+      "fold": 20,
+      "pipeline_a_accuracy": 0.911,
+      "pipeline_b_accuracy": 0.914
+    },
+    {
+      "fold": 21,
+      "pipeline_a_accuracy": 0.91,
+      "pipeline_b_accuracy": 0.907
+    },
+    {
+      "fold": 22,
+      "pipeline_a_accuracy": 0.91,
+      "pipeline_b_accuracy": 0.901
+    },
+    {
+      "fold": 23,
+      "pipeline_a_accuracy": 0.907,
+      "pipeline_b_accuracy": 0.906
+    },
+    {
+      "fold": 24,
+      "pipeline_a_accuracy": 0.907,
+      "pipeline_b_accuracy": 0.905
+    },
+    {
+      "fold": 25,
+      "pipeline_a_accuracy": 0.919,
+      "pipeline_b_accuracy": 0.923
+    },
+    {
+      "fold": 26,
+      "pipeline_a_accuracy": 0.907,
+      "pipeline_b_accuracy": 0.908
+    },
+    {
+      "fold": 27,
+      "pipeline_a_accuracy": 0.908,
+      "pipeline_b_accuracy": 0.896
+    },
+    {
+      "fold": 28,
+      "pipeline_a_accuracy": 0.909,
+      "pipeline_b_accuracy": 0.907
+    },
+    {
+      "fold": 29,
+      "pipeline_a_accuracy": 0.897,
+      "pipeline_b_accuracy": 0.9
+    },
+    {
+      "fold": 30,
+      "pipeline_a_accuracy": 0.904,
+      "pipeline_b_accuracy": 0.901
+    },
+    {
+      "fold": 31,
+      "pipeline_a_accuracy": 0.899,
+      "pipeline_b_accuracy": 0.913
+    },
+    {
+      "fold": 32,
+      "pipeline_a_accuracy": 0.906,
+      "pipeline_b_accuracy": 0.905
+    },
+    {
+      "fold": 33,
+      "pipeline_a_accuracy": 0.901,
+      "pipeline_b_accuracy": 0.89
+    },
+    {
+      "fold": 34,
+      "pipeline_a_accuracy": 0.928,
+      "pipeline_b_accuracy": 0.917
+    },
+    {
+      "fold": 35,
+      "pipeline_a_accuracy": 0.905,
+      "pipeline_b_accuracy": 0.894
+    },
+    {
+      "fold": 36,
+      "pipeline_a_accuracy": 0.909,
+      "pipeline_b_accuracy": 0.91
+    },
+    {
+      "fold": 37,
+      "pipeline_a_accuracy": 0.914,
+      "pipeline_b_accuracy": 0.913
+    },
+    {
+      "fold": 38,
+      "pipeline_a_accuracy": 0.891,
+      "pipeline_b_accuracy": 0.896
+    },
+    {
+      "fold": 39,
+      "pipeline_a_accuracy": 0.916,
+      "pipeline_b_accuracy": 0.92
+    },
+    {
+      "fold": 40,
+      "pipeline_a_accuracy": 0.906,
+      "pipeline_b_accuracy": 0.912
+    },
+    {
+      "fold": 41,
+      "pipeline_a_accuracy": 0.917,
+      "pipeline_b_accuracy": 0.917
+    },
+    {
+      "fold": 42,
+      "pipeline_a_accuracy": 0.904,
+      "pipeline_b_accuracy": 0.906
+    },
+    {
+      "fold": 43,
+      "pipeline_a_accuracy": 0.892,
+      "pipeline_b_accuracy": 0.885
+    },
+    {
+      "fold": 44,
+      "pipeline_a_accuracy": 0.9,
+      "pipeline_b_accuracy": 0.906
+    },
+    {
+      "fold": 45,
+      "pipeline_a_accuracy": 0.914,
+      "pipeline_b_accuracy": 0.916
+    },
+    {
+      "fold": 46,
+      "pipeline_a_accuracy": 0.917,
+      "pipeline_b_accuracy": 0.907
+    },
+    {
+      "fold": 47,
+      "pipeline_a_accuracy": 0.908,
+      "pipeline_b_accuracy": 0.901
+    },
+    {
+      "fold": 48,
+      "pipeline_a_accuracy": 0.896,
+      "pipeline_b_accuracy": 0.903
+    },
+    {
+      "fold": 49,
+      "pipeline_a_accuracy": 0.896,
+      "pipeline_b_accuracy": 0.9
+    }
+  ],
+  "previously_documented_values_for_comparison": {
+    "pipeline_a_mean_accuracy": 0.9068,
+    "pipeline_a_std_accuracy": 0.0079,
+    "pipeline_b_mean_accuracy": 0.9059,
+    "pipeline_b_std_accuracy": 0.0084,
+    "paired_t_test_p": 0.31,
+    "wilcoxon_p": 0.28,
+    "cohens_d": -0.15,
+    "fold_wins_pipeline_a": 26,
+    "fold_wins_pipeline_b": 21,
+    "ties": 3,
+    "source": "docs/architecture_v2.md, prior to this script's re-creation \u2014 provenance of these exact figures is not otherwise reproducible from this repository as of this artifact's creation."
+  }
+}
